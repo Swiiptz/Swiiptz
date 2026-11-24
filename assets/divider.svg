@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 48" width="900" height="48">
+<defs>
+  <linearGradient id="l" x1="0" x2="1"><stop offset="0" stop-color="#7f93ba" stop-opacity="0"/><stop offset=".5" stop-color="#7f93ba"/><stop offset="1" stop-color="#7f93ba" stop-opacity="0"/></linearGradient>
+  <filter id="g" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<style>.core{transform-box:fill-box;transform-origin:center;animation:p 3s ease-in-out infinite}@keyframes p{0%,100%{opacity:.6;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}</style>
+<path d="M40,24H405M495,24H860" stroke="url(#l)" stroke-width="1.5"/>
+<g fill="none" stroke="#9fb0d0" stroke-width="1.6" stroke-linecap="round">
+  <path d="M405,24c10,0 14,-12 24,-12c-8,0 -10,8 -4,10"/><path d="M405,24c10,0 14,12 24,12c-8,0 -10,-8 -4,-10"/>
+  <path d="M495,24c-10,0 -14,-12 -24,-12c8,0 10,8 4,10"/><path d="M495,24c-10,0 -14,12 -24,12c8,0 10,-8 4,-10"/>
+</g>
+<path d="M450,10l14,14l-14,14l-14,-14z" fill="none" stroke="#c9d6ee" stroke-width="1.6"/>
+<circle class="core" cx="450" cy="24" r="5" fill="#bff1ff" filter="url(#g)"/>
+</svg>
