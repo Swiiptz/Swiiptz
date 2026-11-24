@@ -114,89 +114,77 @@ class Grid {
 
 /* ----------------------------------------------------------------- sprites */
 const TAU = Math.PI * 2;
-// Le petit chevalier : capuche, masque à cornes, cape effilochée (fan-art pixel).
-// a = angle d'animation (0..2π, boucle), trail = traîne de la cape vers l'arrière.
-function knight({ pose = 'stand', bob = 0, a = 0, trail = 0, near = 1, far = -2, liftN = 0, liftF = 0, moth = true, ma = a } = {}) {
+// Le petit chevalier (fan-art pixel) : grosse tête-masque à cornes, petite cape lisse, jambes trapues en pointe.
+// a = angle d'animation de la cape (boucle sur 2π), ma = angle du papillon, trail = cape qui traîne en marchant.
+function knight({ pose = 'stand', bob = 0, a = 0, trail = 0, near = 0, far = 0, liftN = 0, liftF = 0, moth = true, ma = a } = {}) {
   const g = new Grid(34, 44);
   const Y = (y) => y + 2 + bob;
-  const CX = 14, sit = pose === 'sit';
+  const sit = pose === 'sit';
 
-  // cape effilochée : brins verticaux qui ondulent
-  const top = 22, bottom = sit ? 30 : 29;
-  for (let y = top; y <= bottom + 2; y++) {
-    const depth = (y - top) / (bottom - top);
-    const hw = 6 + (y - top) * 0.8;
-    for (let x = Math.round(CX - hw); x <= Math.round(CX + hw); x++) {
-      const wave = Math.sin(a + x * 0.9) * 0.8 + Math.sin(2 * a + y * 0.6) * 0.5;
-      const shift = Math.round((-trail + wave) * depth);
-      const len = bottom + Math.round(Math.sin(a + x * 1.7) * 1.1 + ((x * 7) % 3) * 0.6);
-      if (y > len) continue;
-      if (y > len - 2 && x % 3 === 0) continue;                      // franges
-      const rel = (x - (CX - hw)) / (2 * hw), st = ((x % 3) + 3) % 3;
-      let col = st === 0 ? 'A' : st === 1 ? 'B' : 'D';
-      if (rel < 0.2) col = st === 2 ? 'B' : 'A';
-      else if (rel > 0.8) col = st === 0 ? 'B' : st === 1 ? 'D' : 'E';
-      g.set(x + shift, Y(y), col);
-    }
-  }
-  // capuche
-  const flap = Math.sin(a) > 0;
-  for (let y = 7; y <= 23; y++) for (let x = 7; x <= 20; x++) {
-    const cx = x < 10 ? 10 - x : x > 17 ? x - 17 : 0, cy = y < 10 ? 10 - y : 0;
-    if (cx * cx + cy * cy > 10) continue;                            // coins arrondis
-    let col = 'B';
-    if (x <= 8) col = 'A';
-    else if (y <= 8 || x >= 18) col = 'D';
-    else if (x === 11 && y >= 12) col = 'A';
-    g.set(x, Y(y), col);
-  }
-  for (const [x, y] of flap ? [[6, 8], [5, 8], [6, 9]] : [[6, 9], [5, 10], [6, 10]]) g.set(x, Y(y), 'B');
-  for (let x = 8; x <= 23; x++) { g.set(x, Y(22), x > 18 ? 'D' : 'B'); g.set(x, Y(23), 'A'); }
-
-  // masque
-  g.ellipse(19.5, Y(15.5), 5.6, 7, 'M');
-  g.set(22, Y(23), 'M'); g.set(21, Y(23), 'M');
-  for (let y = Y(8); y <= Y(22); y++) for (let x = 13; x <= 26; x++) {
-    if (g.get(x, y) !== C('M')) continue;
-    const dx = x - 19.5, dy = y - Y(15.5);
-    if (dx <= -4.6 || dy >= 6.2) g.set(x, y, 'P');
-    else if (dx <= -3.4 || dy >= 4.8) g.set(x, y, 'N');
-  }
-  for (const [y, x0, x1] of [[12, 21, 22], [13, 20, 22], [14, 20, 23], [15, 20, 23], [16, 20, 23], [17, 20, 22], [18, 21, 22]])
-    for (let x = x0; x <= x1; x++) g.set(x, Y(y), '6');
-  // cornes
-  const front = [[23, 9], [23, 8], [24, 7], [24, 6], [25, 5], [25, 4], [25, 3], [24, 2], [24, 1], [23, 0]];
-  const back = [[16, 9], [16, 8], [15, 7], [15, 6], [14, 5], [14, 4], [14, 3], [15, 2], [15, 1], [16, 0]];
-  for (const [x, y] of back) { g.set(x, Y(y), 'N'); if (y >= 1) g.set(x + 1, Y(y), 'N'); if (y >= 5) g.set(x + 2, Y(y), 'P'); }
-  for (const [x, y] of front) { g.set(x, Y(y), 'M'); if (y >= 1) g.set(x - 1, Y(y), 'M'); if (y >= 5) g.set(x - 2, Y(y), 'N'); }
-
-  g.outline('1');
-
-  // jambes façon Hollow Knight : deux petites pattes noires qui s'affinent en pointe
-  const leg = (hx, fx, fy, col) => {
-    const y0 = Y(30), y1 = Y(fy), n = Math.max(1, y1 - y0);
+  // jambes trapues qui s'affinent en pointe (dessinées d'abord, la cape les recouvre en haut)
+  const leg = (hx, fx, y0, y1, col) => {
+    const n = Math.max(1, y1 - y0);
     for (let y = y0; y <= y1; y++) {
-      const t = (y - y0) / n, x = Math.round(hx + (fx - hx) * t);
-      if (t < 0.6) { g.set(x, y, col); g.set(x + 1, y, col); } else g.set(x + 1, y, col);
+      const t = (y - y0) / n, w = t < 0.5 ? 3 : t < 0.85 ? 2 : 1;
+      const x = Math.round(hx + (fx - hx) * t) + (3 - w);
+      for (let i = 0; i < w; i++) g.set(x + i, Y(y), col);
     }
   };
   if (sit) {
     const k = Math.round(Math.sin(a));
-    for (const [ox, col, dir] of [[-4, 'Q', -1], [0, 'L', 1]]) {
-      for (let x = 15 + ox; x <= 19 + ox; x++) { g.set(x, Y(31), col); g.set(x, Y(32), col); }
-      for (let y = 33; y <= 35; y++) {
-        const kk = y > 34 ? k * dir : 0, x = 19 + ox + kk;
-        if (y <= 33) { g.set(x, Y(y), col); g.set(x + 1, Y(y), col); } else g.set(x + 1, Y(y), col);
+    leg(14, 14 - k, 27, 33, 'Q');
+    leg(18, 18 + k, 27, 33, 'L');
+  } else {
+    leg(13, 13 + far, 27, 37 - liftF, 'Q');
+    leg(17, 17 + near, 27, 37 - liftN, 'L');
+  }
+
+  // cape : posée sur les épaules, courte devant, longue et pointue derrière
+  {
+    const top = 19, sway = Math.sin(a) * 0.9 + trail;
+    const hemFront = sit ? 26 : 27, hemBack = sit ? 30 : 32;
+    for (let y = top; y <= hemBack + 1; y++) {
+      const p = (y - top) / (hemBack - top);
+      const right = Math.round(21 + Math.min(p, 0.6) * 2);                    // devant, presque droit
+      const left = Math.round(13 - Math.pow(p, 1.3) * (7 + sway));            // dos qui s'évase vers l'arrière
+      for (let x = left; x <= right; x++) {
+        const q = (right - x) / Math.max(1, right - left);                     // 0 devant → 1 derrière
+        const hem = hemFront + (hemBack - hemFront) * Math.pow(q, 0.8);      // ourlet en biais
+        if (y > hem) continue;
+        let col = q < 0.2 ? 'D' : q < 0.75 ? 'B' : 'c';
+        if (y <= top + 1 && x >= 14) col = 'D';                              // épaules éclairées
+        if (y > top + 2 && x === Math.round(18 - p * 2)) col = 'A';          // pli
+        if (y > top + 4 && x === Math.round(15 - p * 4)) col = 'A';          // pli arrière
+        g.set(x, Y(y), col);
       }
     }
-  } else {
-    leg(11, 11 + far, 37 - liftF, 'Q');
-    leg(14, 14 + near, 37 - liftN, 'L');
+    // pointe de la cape qui flotte
+    const tipX = Math.round(13 - (7 + sway)) - 1;
+    g.set(tipX, Y(hemBack + 1), 'A'); g.set(tipX - 1, Y(hemBack + 2), 'A');
   }
+
+  // grosse tête-masque
+  g.ellipse(17, Y(13.5), 7.6, 7, 'M');
+  for (let y = Y(5); y <= Y(22); y++) for (let x = 8; x <= 26; x++) {
+    if (g.get(x, y) !== C('M')) continue;
+    const dx = x - 17, dy = y - Y(13.5);
+    if (dx <= -6.2 || (dy >= 5.6 && dx < 3)) g.set(x, y, 'P');
+    else if (dx <= -4.6 || dy >= 4.6) g.set(x, y, 'N');
+  }
+  // œil
+  for (const [y, x0, x1] of [[10, 20, 21], [11, 19, 22], [12, 19, 22], [13, 19, 22], [14, 19, 22], [15, 19, 22], [16, 19, 22], [17, 19, 22], [18, 20, 21]])
+    for (let x = x0; x <= x1; x++) g.set(x, Y(y), '6');
+  // cornes épaisses, écartées puis relevées
+  const horn = (pts, col) => pts.forEach(([x, y, w]) => { for (let i = 0; i < w; i++) g.set(x + i, Y(y), col); });
+  horn([[11, 7, 3], [10, 6, 3], [9, 5, 3], [9, 4, 2], [9, 3, 2], [9, 2, 2], [10, 1, 1], [10, 0, 1]], 'N');
+  horn([[20, 7, 3], [21, 6, 3], [22, 5, 3], [23, 4, 2], [23, 3, 2], [23, 2, 2], [23, 1, 1], [23, 0, 1]], 'M');
+  g.set(22, Y(6), 'N'); g.set(24, Y(5), 'N');
+
+  g.outline('1');
 
   // papillon de lumière qui tourne lentement autour de la tête (passe derrière)
   if (moth) {
-    const pos = (t) => [Math.round(17 + 12 * Math.cos(t)), Math.round(Y(sit ? 9 : 10) + 3 * Math.sin(t))];
+    const pos = (t) => [Math.round(17 + 14 * Math.cos(t)), Math.round(Y(12) + 3 * Math.sin(t))];
     const behind = Math.sin(ma) < -0.15;
     const put = (x, y, c) => { if (!behind || !g.get(x, y)) g.set(x, y, c); };
     [[0.75, 'g'], [0.5, 'O'], [0.25, 'O']].forEach(([d, c]) => { const [tx, ty] = pos(ma - d); if (!g.get(tx, ty)) g.set(tx, ty, c); });
@@ -208,7 +196,7 @@ function knight({ pose = 'stand', bob = 0, a = 0, trail = 0, near = 1, far = -2,
     for (const [dx, dy, c] of wings) put(mx + dx, my + dy, c);
     put(mx, my, '9');
   }
-  g.lantern = { x: 20, y: Y(16) };
+  g.lantern = { x: 17, y: Y(14) };
   return g;
 }
 
