@@ -316,7 +316,7 @@ function svgFrames(grids, k, dur, cls) {
 console.log('Génération des sprites…');
 
 const idleParams = (i, n = 32) => ({ pose: 'stand', a: (i / n) * 2 * TAU, ma: (i / n) * TAU, bob: Math.sin((i / n) * 2 * TAU) > 0.3 ? 1 : 0, near: 0, far: 0 });
-const sitParams = (i, n = 24) => ({ pose: 'sit', a: (i / n) * 2 * TAU, ma: (i / n) * TAU, bob: Math.sin((i / n) * 2 * TAU) > 0.3 ? 1 : 0 });
+const sitParams = (i, n = 24) => ({ pose: 'sit', a: (i / n) * 2 * TAU, ma: (i / n) * TAU, bob: 0 });   // assis : le corps ne bouge pas, seuls la cape et la capuche ondulent
 const idleGrids = [...Array(32)].map((_, i) => knight(idleParams(i)));
 const sitGrids = [...Array(24)].map((_, i) => knight(sitParams(i)));
 save('knight-idle.gif', encodeGIF(idleGrids.map((g) => ({ grid: g.scale(4), delay: 11 })), { transparent: true }));
