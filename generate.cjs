@@ -353,7 +353,7 @@ function benchScene(i, n) {
   }
   return g;
 }
-save('bench-rest.gif', encodeGIF([...Array(24)].map((_, i) => ({ grid: benchScene(i, 24).scale(4), delay: 12 }))));
+// save('bench-rest.gif', encodeGIF([...Array(24)].map((_, i) => ({ grid: benchScene(i, 24).scale(4), delay: 12 }))));
 save('crawler.gif', encodeGIF([0, 1].map((p) => ({ grid: beetle(p).scale(5), delay: 18 })), { transparent: true }));
 
 /* --------------------------------------------- scène : traversée des cavernes */
@@ -583,10 +583,6 @@ ${CONFIG.about.map(([e, t]) => `- ${e} ${t}`).join('\n')}
 
 <p align="center">
   <img src="assets/cavern-walk.gif?v=${v}" width="100%" alt="Le petit chevalier traverse une caverne derrière un scarabée"/>
-</p>
-
-<p align="center">
-  <img src="assets/bench-rest.gif?v=${v}" width="420" alt="Le petit chevalier se repose sur un banc"/>
 </p>
 
 <p align="center"><i>${esc(CONFIG.footer)}</i></p>
