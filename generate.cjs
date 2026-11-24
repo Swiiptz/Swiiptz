@@ -114,77 +114,69 @@ class Grid {
 
 /* ----------------------------------------------------------------- sprites */
 const TAU = Math.PI * 2;
-// Le petit chevalier (fan-art pixel) : grosse tête-masque à cornes, petite cape lisse, jambes trapues en pointe.
+// Le petit chevalier (fan-art pixel) : capuche, masque à cornes dessinés à la main, cape pointue, jambes trapues.
 // a = angle d'animation de la cape (boucle sur 2π), ma = angle du papillon, trail = cape qui traîne en marchant.
 function knight({ pose = 'stand', bob = 0, a = 0, trail = 0, near = 0, far = 0, liftN = 0, liftF = 0, moth = true, ma = a } = {}) {
   const g = new Grid(34, 44);
+  const OX = 5;
   const Y = (y) => y + 2 + bob;
   const sit = pose === 'sit';
+  const span = (rows, col) => rows.forEach(([y, x0, x1]) => { for (let x = x0; x <= x1; x++) g.set(x + OX, Y(y), typeof col === 'function' ? col(x, y, x0, x1) : col); });
 
-  // jambes trapues qui s'affinent en pointe (dessinées d'abord, la cape les recouvre en haut)
-  const leg = (hx, fx, y0, y1, col) => {
+  // jambes trapues en pointe
+  const leg = (hx, fx, y0, y1, c) => {
     const n = Math.max(1, y1 - y0);
     for (let y = y0; y <= y1; y++) {
       const t = (y - y0) / n, w = t < 0.5 ? 3 : t < 0.85 ? 2 : 1;
       const x = Math.round(hx + (fx - hx) * t) + (3 - w);
-      for (let i = 0; i < w; i++) g.set(x + i, Y(y), col);
+      for (let i = 0; i < w; i++) g.set(x + i, Y(y), c);
     }
   };
-  if (sit) {
-    const k = Math.round(Math.sin(a));
-    leg(14, 14 - k, 27, 33, 'Q');
-    leg(18, 18 + k, 27, 33, 'L');
-  } else {
-    leg(13, 13 + far, 27, 37 - liftF, 'Q');
-    leg(17, 17 + near, 27, 37 - liftN, 'L');
-  }
+  if (sit) { const k = Math.round(Math.sin(a)); leg(15, 15 - k, 26, 32, 'Q'); leg(19, 19 + k, 26, 32, 'L'); }
+  else { leg(14, 14 + far, 26, 36 - liftF, 'Q'); leg(18, 18 + near, 26, 36 - liftN, 'L'); }
 
-  // cape : posée sur les épaules, courte devant, longue et pointue derrière
+  // cape : courte devant, longue et pointue derrière
   {
     const top = 19, sway = Math.sin(a) * 0.9 + trail;
-    const hemFront = sit ? 26 : 27, hemBack = sit ? 30 : 32;
+    const hemFront = sit ? 25 : 26, hemBack = sit ? 29 : 31;
     for (let y = top; y <= hemBack + 1; y++) {
       const p = (y - top) / (hemBack - top);
-      const right = Math.round(21 + Math.min(p, 0.6) * 2);                    // devant, presque droit
-      const left = Math.round(13 - Math.pow(p, 1.3) * (7 + sway));            // dos qui s'évase vers l'arrière
+      const right = Math.round(23 + Math.min(p, 0.6) * 2);
+      const left = Math.round(10 - Math.pow(p, 1.3) * (6 + sway));
       for (let x = left; x <= right; x++) {
-        const q = (right - x) / Math.max(1, right - left);                     // 0 devant → 1 derrière
-        const hem = hemFront + (hemBack - hemFront) * Math.pow(q, 0.8);      // ourlet en biais
-        if (y > hem) continue;
-        let col = q < 0.2 ? 'D' : q < 0.75 ? 'B' : 'c';
-        if (y <= top + 1 && x >= 14) col = 'D';                              // épaules éclairées
-        if (y > top + 2 && x === Math.round(18 - p * 2)) col = 'A';          // pli
-        if (y > top + 4 && x === Math.round(15 - p * 4)) col = 'A';          // pli arrière
-        g.set(x, Y(y), col);
+        const q = (right - x) / Math.max(1, right - left);
+        if (y > hemFront + (hemBack - hemFront) * Math.pow(q, 0.8)) continue;
+        let c = q < 0.2 ? 'D' : q < 0.75 ? 'B' : 'c';
+        if (y > top + 2 && x === Math.round(19 - p * 2)) c = 'A';
+        if (y > top + 4 && x === Math.round(14 - p * 4)) c = 'A';
+        g.set(x, Y(y), c);
       }
     }
-    // pointe de la cape qui flotte
-    const tipX = Math.round(13 - (7 + sway)) - 1;
+    const tipX = Math.round(10 - (6 + sway)) - 1;
     g.set(tipX, Y(hemBack + 1), 'A'); g.set(tipX - 1, Y(hemBack + 2), 'A');
   }
 
-  // grosse tête-masque
-  g.ellipse(17, Y(13.5), 7.6, 7, 'M');
-  for (let y = Y(5); y <= Y(22); y++) for (let x = 8; x <= 26; x++) {
-    if (g.get(x, y) !== C('M')) continue;
-    const dx = x - 17, dy = y - Y(13.5);
-    if (dx <= -6.2 || (dy >= 5.6 && dx < 3)) g.set(x, y, 'P');
-    else if (dx <= -4.6 || dy >= 4.6) g.set(x, y, 'N');
-  }
-  // œil
-  for (const [y, x0, x1] of [[10, 20, 21], [11, 19, 22], [12, 19, 22], [13, 19, 22], [14, 19, 22], [15, 19, 22], [16, 19, 22], [17, 19, 22], [18, 20, 21]])
-    for (let x = x0; x <= x1; x++) g.set(x, Y(y), '6');
-  // cornes épaisses, écartées puis relevées
-  const horn = (pts, col) => pts.forEach(([x, y, w]) => { for (let i = 0; i < w; i++) g.set(x + i, Y(y), col); });
-  horn([[11, 7, 3], [10, 6, 3], [9, 5, 3], [9, 4, 2], [9, 3, 2], [9, 2, 2], [10, 1, 1], [10, 0, 1]], 'N');
-  horn([[20, 7, 3], [21, 6, 3], [22, 5, 3], [23, 4, 2], [23, 3, 2], [23, 2, 2], [23, 1, 1], [23, 0, 1]], 'M');
-  g.set(22, Y(6), 'N'); g.set(24, Y(5), 'N');
+  // capuche (sac arrondi, pointe arrière qui flotte)
+  const hood = [[4, 4, 13], [5, 3, 15], [6, 2, 16], ...[7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map((y) => [y, 1, 18]), [18, 2, 18], [19, 3, 18], [20, 4, 18]];
+  span(hood, (x, y, x0, x1) => (x <= x0 + 1 ? 'A' : y <= 5 ? 'D' : x === 7 && y >= 9 ? 'A' : 'B'));
+  span(Math.sin(a) > 0 ? [[4, 2, 3], [5, 1, 2]] : [[4, 2, 3], [5, 1, 2], [6, 0, 1]], 'B');
+
+  // masque
+  const mask = [[7, 13, 17], [8, 12, 19], [9, 11, 20], [10, 11, 21], [11, 11, 22], [12, 11, 22], [13, 11, 22], [14, 11, 22], [15, 11, 22], [16, 11, 21], [17, 12, 21], [18, 13, 20], [19, 15, 19]];
+  span(mask, (x, y, x0, x1) => (y >= 18 || x <= 13 || (y === 17 && x <= 14) ? 'N' : 'M'));
+  // bord de capuche qui encadre le masque
+  for (let y = 8; y <= 17; y++) { const rx = y === 8 || y === 17 ? 13 : 12; g.set(rx + OX, Y(y), 'D'); g.set(rx - 1 + OX, Y(y), 'B'); }
+  // grand œil
+  span([[11, 18, 19], [12, 17, 20], [13, 17, 20], [14, 17, 20], [15, 17, 20], [16, 17, 20], [17, 18, 19]], '6');
+  // cornes
+  span([[6, 12, 14], [5, 11, 13], [4, 10, 12], [3, 10, 11], [2, 10, 11], [1, 10, 10], [0, 10, 10]], 'N');
+  span([[6, 17, 19], [5, 18, 20], [4, 19, 21], [3, 20, 21], [2, 20, 21], [1, 21, 21], [0, 21, 21]], 'M');
 
   g.outline('1');
 
   // papillon de lumière qui tourne lentement autour de la tête (passe derrière)
   if (moth) {
-    const pos = (t) => [Math.round(17 + 14 * Math.cos(t)), Math.round(Y(12) + 3 * Math.sin(t))];
+    const pos = (t) => [Math.round(20 + 12 * Math.cos(t)), Math.round(Y(11) + 3 * Math.sin(t))];
     const behind = Math.sin(ma) < -0.15;
     const put = (x, y, c) => { if (!behind || !g.get(x, y)) g.set(x, y, c); };
     [[0.75, 'g'], [0.5, 'O'], [0.25, 'O']].forEach(([d, c]) => { const [tx, ty] = pos(ma - d); if (!g.get(tx, ty)) g.set(tx, ty, c); });
@@ -196,7 +188,7 @@ function knight({ pose = 'stand', bob = 0, a = 0, trail = 0, near = 0, far = 0, 
     for (const [dx, dy, c] of wings) put(mx + dx, my + dy, c);
     put(mx, my, '9');
   }
-  g.lantern = { x: 17, y: Y(14) };
+  g.lantern = { x: 21, y: Y(13) };
   return g;
 }
 
