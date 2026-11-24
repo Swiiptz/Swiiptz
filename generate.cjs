@@ -548,14 +548,15 @@ save('divider.svg', divider());
 
 /* ------------------------------------------------------------------ README */
 const u = CONFIG.username;
+const v = Date.now().toString(36);   // anti-cache : change à chaque génération
 const statTheme = 'bg_color=0b0f1e&title_color=e9f6ff&text_color=b9c2d6&icon_color=7fdcff&border_color=2b3150&ring_color=7fdcff';
 const readme = `<p align="center">
-  <img src="assets/banner.svg" width="100%" alt="${esc(CONFIG.name)} — ${esc(CONFIG.tagline)}"/>
+  <img src="assets/banner.svg?v=${v}" width="100%" alt="${esc(CONFIG.name)} — ${esc(CONFIG.tagline)}"/>
 </p>
 
-<p align="center"><img src="assets/divider.svg" width="70%" alt=""/></p>
+<p align="center"><img src="assets/divider.svg?v=${v}" width="70%" alt=""/></p>
 
-<img src="assets/knight-idle.gif" align="right" width="136" alt="Le petit chevalier, en pixel art"/>
+<img src="assets/knight-idle.gif?v=${v}" align="right" width="136" alt="Le petit chevalier, en pixel art"/>
 
 ### ✦ Le carnet du vagabond
 
@@ -563,7 +564,7 @@ ${CONFIG.about.map(([e, t]) => `- ${e} ${t}`).join('\n')}
 
 <br clear="right"/>
 
-<p align="center"><img src="assets/divider.svg" width="70%" alt=""/></p>
+<p align="center"><img src="assets/divider.svg?v=${v}" width="70%" alt=""/></p>
 
 ### ✦ Arsenal
 
@@ -571,7 +572,7 @@ ${CONFIG.about.map(([e, t]) => `- ${e} ${t}`).join('\n')}
   <img src="https://skillicons.dev/icons?i=${CONFIG.skills}&theme=dark" alt="Compétences"/>
 </p>
 
-<p align="center"><img src="assets/divider.svg" width="70%" alt=""/></p>
+<p align="center"><img src="assets/divider.svg?v=${v}" width="70%" alt=""/></p>
 
 ### ✦ Journal des profondeurs
 
@@ -581,11 +582,11 @@ ${CONFIG.about.map(([e, t]) => `- ${e} ${t}`).join('\n')}
 </p>
 
 <p align="center">
-  <img src="assets/cavern-walk.gif" width="100%" alt="Le petit chevalier traverse une caverne derrière un scarabée"/>
+  <img src="assets/cavern-walk.gif?v=${v}" width="100%" alt="Le petit chevalier traverse une caverne derrière un scarabée"/>
 </p>
 
 <p align="center">
-  <img src="assets/bench-rest.gif" width="420" alt="Le petit chevalier se repose sur un banc"/>
+  <img src="assets/bench-rest.gif?v=${v}" width="420" alt="Le petit chevalier se repose sur un banc"/>
 </p>
 
 <p align="center"><i>${esc(CONFIG.footer)}</i></p>

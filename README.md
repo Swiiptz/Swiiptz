@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="assets/banner.svg" width="100%" alt="SWIIPTZ — Développeur · cartographe des royaumes oubliés"/>
+  <img src="assets/banner.svg?v=mwuutyva" width="100%" alt="SWIIPTZ — Développeur · cartographe des royaumes oubliés"/>
 </p>
 
-<p align="center"><img src="assets/divider.svg" width="70%" alt=""/></p>
+<p align="center"><img src="assets/divider.svg?v=mwuutyva" width="70%" alt=""/></p>
 
-<img src="assets/knight-idle.gif" align="right" width="136" alt="Le petit chevalier, en pixel art"/>
+<img src="assets/knight-idle.gif?v=mwuutyva" align="right" width="136" alt="Le petit chevalier, en pixel art"/>
 
 ### ✦ Le carnet du vagabond
 
@@ -14,7 +14,7 @@
 
 <br clear="right"/>
 
-<p align="center"><img src="assets/divider.svg" width="70%" alt=""/></p>
+<p align="center"><img src="assets/divider.svg?v=mwuutyva" width="70%" alt=""/></p>
 
 ### ✦ Arsenal
 
@@ -22,7 +22,7 @@
   <img src="https://skillicons.dev/icons?i=js,ts,nodejs,html,css,git,github,vscode&theme=dark" alt="Compétences"/>
 </p>
 
-<p align="center"><img src="assets/divider.svg" width="70%" alt=""/></p>
+<p align="center"><img src="assets/divider.svg?v=mwuutyva" width="70%" alt=""/></p>
 
 ### ✦ Journal des profondeurs
 
@@ -32,11 +32,11 @@
 </p>
 
 <p align="center">
-  <img src="assets/cavern-walk.gif" width="100%" alt="Le petit chevalier traverse une caverne derrière un scarabée"/>
+  <img src="assets/cavern-walk.gif?v=mwuutyva" width="100%" alt="Le petit chevalier traverse une caverne derrière un scarabée"/>
 </p>
 
 <p align="center">
-  <img src="assets/bench-rest.gif" width="420" alt="Le petit chevalier se repose sur un banc"/>
+  <img src="assets/bench-rest.gif?v=mwuutyva" width="420" alt="Le petit chevalier se repose sur un banc"/>
 </p>
 
 <p align="center"><i>Repose-toi un instant, voyageur. Le chemin continue.</i></p>
