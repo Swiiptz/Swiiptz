@@ -14,14 +14,15 @@ const path = require('path');
 const CONFIG = {
   username: 'Swiiptz',               // ton pseudo GitHub (utilisé pour les stats)
   name: 'SWIIPTZ',                   // titre de la bannière
-  tagline: 'Développeur · cartographe des royaumes oubliés',
+  tagline: 'Développeur Python & TypeScript · IA, outils et jeu de rôle',
   greeting: '~ Bienvenue, voyageur ~',
   about: [
-    ['🗺️', "<b>Quête en cours</b> : <i>Au fond des archives, d'anciens grimoires attendent qu'on les traduise. Je fabrique des automates qui tournent les pages à ma place.</i><br/>↳ <code>Automatisation de traduction</code>"],
-    ['🕯️', "<b>Savoir convoité</b> : <i>On raconte qu'une lanterne bien nourrie de parchemins finit par répondre aux questions des voyageurs.</i><br/>↳ <code>IA &amp; RAG</code>"],
-    ['🪲', "<b>Terrain de chasse</b> : <i>Les insectes nichent entre les balises et sous les feuilles de style. Aucun ne m'échappe longtemps.</i><br/>↳ <code>HTML / CSS</code>"],
+    ['⚙️', "<b>Automatisation</b> : je construis des chaînes de traitement en Python qui traduisent, corrigent et mettent en page des livres de règles de jeu de rôle."],
+    ['🤖', "<b>IA appliquée</b> : j'explore le RAG et les agents, par exemple avec <b>GrimmorBot</b>, un bot Discord qui répond aux questions de règles en pleine partie."],
+    ['🗺️', "<b>Outils pour les joueurs</b> : cartes de chronique, sites compagnons pour joueurs et MJ, fiches en ligne."],
+    ['📱', "<b>Applis &amp; web</b> : du site statique à l'appli mobile en Flutter, avec une préférence pour les outils qu'on utilise vraiment."],
   ],
-  skills: 'js,ts,nodejs,html,css,git,github,vscode',   // ids skillicons.dev
+  skills: 'py,ts,js,nodejs,html,css,flutter,dart,postgres,git,github,vscode',   // ids skillicons.dev
   footer: 'Repose-toi un instant, voyageur. Le chemin continue.',
 };
 
@@ -286,7 +287,16 @@ function encodeGIF(frames, { transparent = false, loop = true } = {}) {
 /* ------------------------------------------------------------- utilitaires */
 function rng(seed) { return () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const save = (f, data) => { fs.writeFileSync(path.join(OUT, f), data); console.log(`  ${f.padEnd(22)} ${(Buffer.byteLength(data) / 1024).toFixed(1)} Ko`); };
+// Chaque fichier reçoit un nom qui dépend de son contenu (ex. banner-1a2b3c4d.svg) :
+// GitHub met les images en cache et ignore les paramètres d'URL, un nouveau nom force la mise à jour.
+const ASSETS = {};
+const save = (f, data) => {
+  const hash = require('crypto').createHash('sha1').update(data).digest('hex').slice(0, 8);
+  const name = f.replace(/(\.\w+)$/, '-' + hash + '$1');
+  fs.writeFileSync(path.join(OUT, name), data);
+  ASSETS[f] = 'assets/' + name;
+  console.log(`  ${name.padEnd(30)} ${(Buffer.byteLength(data) / 1024).toFixed(1)} Ko`);
+};
 
 // pixel grid → rectangles SVG (runs horizontaux)
 function gridToRects(g, k) {
@@ -550,15 +560,14 @@ save('divider.svg', divider());
 
 /* ------------------------------------------------------------------ README */
 const u = CONFIG.username;
-const v = Date.now().toString(36);   // anti-cache : change à chaque génération
 const statTheme = 'bg_color=0b0f1e&title_color=e9f6ff&text_color=b9c2d6&icon_color=7fdcff&border_color=2b3150&ring_color=7fdcff';
 const readme = `<p align="center">
-  <img src="assets/banner.svg?v=${v}" width="100%" alt="${esc(CONFIG.name)} — ${esc(CONFIG.tagline)}"/>
+  <img src="${ASSETS['banner.svg']}" width="100%" alt="${esc(CONFIG.name)} — ${esc(CONFIG.tagline)}"/>
 </p>
 
-<p align="center"><img src="assets/divider.svg?v=${v}" width="70%" alt=""/></p>
+<p align="center"><img src="${ASSETS['divider.svg']}" width="70%" alt=""/></p>
 
-<img src="assets/knight-idle.gif?v=${v}" align="right" width="136" alt="Le petit chevalier, en pixel art"/>
+<img src="${ASSETS['knight-idle.gif']}" align="right" width="136" alt="Le petit chevalier, en pixel art"/>
 
 ### ✦ Le carnet du vagabond
 
@@ -566,7 +575,7 @@ ${CONFIG.about.map(([e, t]) => `- ${e} ${t}`).join('\n')}
 
 <br clear="right"/>
 
-<p align="center"><img src="assets/divider.svg?v=${v}" width="70%" alt=""/></p>
+<p align="center"><img src="${ASSETS['divider.svg']}" width="70%" alt=""/></p>
 
 ### ✦ Arsenal
 
@@ -574,7 +583,7 @@ ${CONFIG.about.map(([e, t]) => `- ${e} ${t}`).join('\n')}
   <img src="https://skillicons.dev/icons?i=${CONFIG.skills}&theme=dark" alt="Compétences"/>
 </p>
 
-<p align="center"><img src="assets/divider.svg?v=${v}" width="70%" alt=""/></p>
+<p align="center"><img src="${ASSETS['divider.svg']}" width="70%" alt=""/></p>
 
 ### ✦ Journal des profondeurs
 
@@ -584,11 +593,14 @@ ${CONFIG.about.map(([e, t]) => `- ${e} ${t}`).join('\n')}
 </p>
 
 <p align="center">
-  <img src="assets/cavern-walk.gif?v=${v}" width="100%" alt="Le petit chevalier traverse une caverne derrière un scarabée"/>
+  <img src="${ASSETS['cavern-walk.gif']}" width="100%" alt="Le petit chevalier traverse une caverne derrière un scarabée"/>
 </p>
 
 <p align="center"><i>${esc(CONFIG.footer)}</i></p>
 `;
 fs.writeFileSync(path.join(__dirname, 'README.md'), readme);
 console.log('  README.md');
+// supprime les anciennes versions des fichiers
+const keep = new Set(Object.values(ASSETS).map((p) => path.basename(p)));
+for (const f of fs.readdirSync(OUT)) if (!keep.has(f)) fs.unlinkSync(path.join(OUT, f));
 console.log('Terminé.');
