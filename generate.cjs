@@ -75,6 +75,9 @@ const PAL = [
   ['z', '#e3e9f5'], // antennes
   ['L', '#3a4163'], // jambe avant
   ['Q', '#262b45'], // jambe arrière
+  ['V', '#17181f'], // jambe (noir)
+  ['v', '#101117'], // jambe arrière (noir)
+  ['U', '#565c78'], // reflet de jambe
   ['I', '#2a3152'], // fer forgé
   ['J', '#56618f'], // fer reflet
   ['H', '#a3aed6'], // fer éclat
@@ -127,13 +130,13 @@ function knight({ pose = 'stand', bob = 0, a = 0, trail = 0, near = 0, far = 0, 
   const leg = (hx, fx, y0, y1, c) => {
     const n = Math.max(1, y1 - y0);
     for (let y = y0; y <= y1; y++) {
-      const t = (y - y0) / n, w = t < 0.5 ? 3 : t < 0.85 ? 2 : 1;
+      const t = (y - y0) / n, w = t < 0.6 ? 3 : 2;
       const x = Math.round(hx + (fx - hx) * t) + (3 - w);
-      for (let i = 0; i < w; i++) g.set(x + i, Y(y), c);
+      for (let i = 0; i < w; i++) g.set(x + i, Y(y), c === 'V' && i === w - 1 ? 'U' : c);
     }
   };
-  if (sit) { const k = Math.round(Math.sin(a)); leg(15, 15 - k, 26, 32, 'Q'); leg(19, 19 + k, 26, 32, 'L'); }
-  else { leg(14, 14 + far, 26, 36 - liftF, 'Q'); leg(18, 18 + near, 26, 36 - liftN, 'L'); }
+  if (sit) { const k = Math.round(Math.sin(a)); leg(15, 15 - k, 26, 32, 'v'); leg(19, 19 + k, 26, 32, 'V'); }
+  else { leg(14, 14 + far, 26, 36 - liftF, 'v'); leg(18, 18 + near, 26, 36 - liftN, 'V'); }
 
   // cape : courte devant, longue et pointue derrière
   {
