@@ -73,8 +73,8 @@ const PAL = [
   ['x', '#d6a24a'], // laiton clair
   ['X', '#7d5726'], // laiton sombre
   ['z', '#e3e9f5'], // antennes
-  ['L', '#353c5c'], // jambe avant
-  ['Q', '#20253d'], // jambe arrière
+  ['L', '#3a4163'], // jambe avant
+  ['Q', '#262b45'], // jambe arrière
   ['I', '#2a3152'], // fer forgé
   ['J', '#56618f'], // fer reflet
   ['H', '#a3aed6'], // fer éclat
@@ -116,13 +116,13 @@ class Grid {
 const TAU = Math.PI * 2;
 // Le petit chevalier : capuche, masque à cornes, cape effilochée (fan-art pixel).
 // a = angle d'animation (0..2π, boucle), trail = traîne de la cape vers l'arrière.
-function knight({ pose = 'stand', bob = 0, a = 0, trail = 0, near = 1, far = -2, liftN = 0, liftF = 0, moth = true } = {}) {
+function knight({ pose = 'stand', bob = 0, a = 0, trail = 0, near = 1, far = -2, liftN = 0, liftF = 0, moth = true, ma = a } = {}) {
   const g = new Grid(34, 44);
   const Y = (y) => y + 2 + bob;
   const CX = 14, sit = pose === 'sit';
 
   // cape effilochée : brins verticaux qui ondulent
-  const top = 22, bottom = sit ? 30 : 31;
+  const top = 22, bottom = sit ? 30 : 29;
   for (let y = top; y <= bottom + 2; y++) {
     const depth = (y - top) / (bottom - top);
     const hw = 6 + (y - top) * 0.8;
@@ -172,39 +172,36 @@ function knight({ pose = 'stand', bob = 0, a = 0, trail = 0, near = 1, far = -2,
 
   g.outline('1');
 
-  // jambes courtes et épaisses, petit pied pointu vers l'avant
+  // jambes façon Hollow Knight : deux petites pattes noires qui s'affinent en pointe
   const leg = (hx, fx, fy, col) => {
-    const y0 = Y(31), y1 = Y(fy);
-    for (let y = y0; y < y1; y++) {
-      const x = Math.round(hx + (fx - hx) * (y - y0) / Math.max(1, y1 - y0));
-      g.set(x, y, col); g.set(x + 1, y, col);
+    const y0 = Y(30), y1 = Y(fy), n = Math.max(1, y1 - y0);
+    for (let y = y0; y <= y1; y++) {
+      const t = (y - y0) / n, x = Math.round(hx + (fx - hx) * t);
+      if (t < 0.6) { g.set(x, y, col); g.set(x + 1, y, col); } else g.set(x + 1, y, col);
     }
-    g.set(fx, y1 - 1, col); g.set(fx + 1, y1 - 1, col); g.set(fx + 2, y1 - 1, col);
-    for (let x = fx; x <= fx + 3; x++) g.set(x, y1, col);
   };
   if (sit) {
     const k = Math.round(Math.sin(a));
     for (const [ox, col, dir] of [[-4, 'Q', -1], [0, 'L', 1]]) {
       for (let x = 15 + ox; x <= 19 + ox; x++) { g.set(x, Y(31), col); g.set(x, Y(32), col); }
-      for (let y = 33; y <= 38; y++) { const kk = y > 35 ? k * dir : 0; g.set(19 + ox + kk, Y(y), col); g.set(20 + ox + kk, Y(y), col); }
-      g.set(21 + ox + k * dir, Y(38), col);
+      for (let y = 33; y <= 35; y++) {
+        const kk = y > 34 ? k * dir : 0, x = 19 + ox + kk;
+        if (y <= 33) { g.set(x, Y(y), col); g.set(x + 1, Y(y), col); } else g.set(x + 1, Y(y), col);
+      }
     }
   } else {
-    leg(11, 11 + far, 38 - liftF, 'Q');
-    leg(14, 14 + near, 38 - liftN, 'L');
+    leg(11, 11 + far, 37 - liftF, 'Q');
+    leg(14, 14 + near, 37 - liftN, 'L');
   }
 
-  // papillon de lumière en orbite autour des jambes
+  // papillon de lumière qui tourne lentement autour de la tête (passe derrière)
   if (moth) {
-    const pos = (t) => [Math.round(15 + 14 * Math.cos(t)), Math.round(Y(sit ? 29 : 31) + 4 * Math.sin(t))];
-    const behind = false;
+    const pos = (t) => [Math.round(17 + 12 * Math.cos(t)), Math.round(Y(sit ? 9 : 10) + 3 * Math.sin(t))];
+    const behind = Math.sin(ma) < -0.15;
     const put = (x, y, c) => { if (!behind || !g.get(x, y)) g.set(x, y, c); };
-    // traînée
-    [[1.1, 'g'], [0.75, 'O'], [0.4, 'O']].forEach(([d, c]) => { const [tx, ty] = pos(a - d); if (!g.get(tx, ty)) g.set(tx, ty, c); });
-    const [mx, my] = pos(a), open = Math.floor((a / TAU) * 24) % 2 === 0;
-    // halo
+    [[0.75, 'g'], [0.5, 'O'], [0.25, 'O']].forEach(([d, c]) => { const [tx, ty] = pos(ma - d); if (!g.get(tx, ty)) g.set(tx, ty, c); });
+    const [mx, my] = pos(ma), open = Math.floor((a / TAU) * 12) % 2 === 0;
     for (const [dx, dy] of [[-3, 0], [3, 0], [0, -2], [0, 2], [-2, 1], [2, 1], [-2, -2], [2, -2]]) if (!g.get(mx + dx, my + dy)) g.set(mx + dx, my + dy, 'g');
-    // ailes
     const wings = open
       ? [[-2, -1, 'o'], [-1, -1, 'o'], [1, -1, 'o'], [2, -1, 'o'], [-1, 0, 'q'], [1, 0, 'q'], [-1, 1, 'O'], [1, 1, 'O']]
       : [[-1, -1, 'o'], [1, -1, 'o'], [-1, 0, 'q'], [1, 0, 'q']];
@@ -335,17 +332,17 @@ function svgFrames(grids, k, dur, cls) {
 /* --------------------------------------------------------------------- GIFs */
 console.log('Génération des sprites…');
 
-const idleParams = (i, n = 12) => ({ pose: 'stand', a: (i / n) * TAU, bob: Math.sin((i / n) * TAU) > 0.3 ? 1 : 0, near: 0, far: 0 });
-const sitParams = (i, n = 12) => ({ pose: 'sit', a: (i / n) * TAU, bob: Math.sin((i / n) * TAU) > 0.3 ? 1 : 0 });
-const idleGrids = [...Array(12)].map((_, i) => knight(idleParams(i)));
-const sitGrids = [...Array(12)].map((_, i) => knight(sitParams(i)));
+const idleParams = (i, n = 32) => ({ pose: 'stand', a: (i / n) * 2 * TAU, ma: (i / n) * TAU, bob: Math.sin((i / n) * 2 * TAU) > 0.3 ? 1 : 0, near: 0, far: 0 });
+const sitParams = (i, n = 24) => ({ pose: 'sit', a: (i / n) * 2 * TAU, ma: (i / n) * TAU, bob: Math.sin((i / n) * 2 * TAU) > 0.3 ? 1 : 0 });
+const idleGrids = [...Array(32)].map((_, i) => knight(idleParams(i)));
+const sitGrids = [...Array(24)].map((_, i) => knight(sitParams(i)));
 save('knight-idle.gif', encodeGIF(idleGrids.map((g) => ({ grid: g.scale(4), delay: 11 })), { transparent: true }));
 
-const walkParams = (t) => {
-  const ph = ((t % 16) / 16) * TAU, near = Math.round(Math.sin(ph) * 3), c = Math.cos(ph);
-  return { pose: 'walk', a: ph, trail: 2, near, far: -near, liftN: c > 0.3 ? 1 : 0, liftF: c < -0.3 ? 1 : 0, bob: Math.abs(near) <= 1 ? -1 : 0 };
+const walkParams = (t, n = 64) => {
+  const ph = ((t % 16) / 16) * TAU, near = Math.round(Math.sin(ph) * 2), c = Math.cos(ph);
+  return { pose: 'walk', a: ph, trail: 2, near, far: -near, liftN: c > 0.3 ? 1 : 0, liftF: c < -0.3 ? 1 : 0, bob: Math.abs(near) <= 1 ? -1 : 0, ma: (t / n) * TAU };
 };
-save('knight-walk.gif', encodeGIF([...Array(16)].map((_, t) => ({ grid: knight(walkParams(t)).scale(4), delay: 6 })), { transparent: true }));
+save('knight-walk.gif', encodeGIF([...Array(48)].map((_, t) => ({ grid: knight(walkParams(t, 48)).scale(4), delay: 6 })), { transparent: true }));
 function benchScene(i, n) {
   const W = 120, H = 64, GROUND = 56, g = new Grid(W, H), a = (i / n) * TAU;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -422,7 +419,7 @@ function scene(t, W = 200, H = 64) {
     for (const [o, hgt] of tuft) if (u === o) for (let y = 1; y <= hgt; y++) g.set(x + (y === hgt && (t >> 2) % 2 ? 1 : 0), GROUND - y, 't');
   }
   // halo de la lanterne sur le décor
-  const wx = 60, wy = GROUND - 40;
+  const wx = 60, wy = GROUND - 39;
   const p = walkParams(t), hero = knight(p);
   const lcx = wx + hero.lantern.x, lcy = wy + hero.lantern.y, R = 11;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -488,7 +485,7 @@ function banner() {
   // banc + chevalier assis (pixel art) + scarabée
   const k = 5, bx = 930, by = 384 - 22 * k;
   const wx = bx + 16 * k, wy = by + (12 - 32) * k;
-  const wf = svgFrames(sitGrids, k, 1.8, 'w');
+  const wf = svgFrames(sitGrids, k, 3.6, 'w');
   const bf = svgFrames([beetle(0), beetle(1)], 4, 0.36, 'b');
   const benchSvg = gridToRects(bench(), k);
   const lanternX = wx + (sitGrids[0].lantern.x + 0.5) * k, lanternY = wy + (sitGrids[0].lantern.y + 0.5) * k;
