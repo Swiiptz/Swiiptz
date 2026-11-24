@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.svg" width="100%" alt="SWIIPTZ — Développeur · explorateur des profondeurs"/>
+  <img src="assets/banner.svg" width="100%" alt="SWIIPTZ — Développeur · cartographe des royaumes oubliés"/>
 </p>
 
 <p align="center"><img src="assets/divider.svg" width="70%" alt=""/></p>
@@ -8,10 +8,9 @@
 
 ### ✦ Le carnet du vagabond
 
-- 🗺️ Je cartographie des projets en ce moment : <b>…</b>
-- 🕯️ J'apprends : <b>…</b>
-- 🪲 Je chasse les bugs dans : <b>…</b>
-- 💬 Me trouver : <b>…</b>
+- 🗺️ <b>Quête en cours</b> : <i>Au fond des archives, d'anciens grimoires attendent qu'on les traduise. Je fabrique des automates qui tournent les pages à ma place.</i><br/>↳ <code>Automatisation de traduction</code>
+- 🕯️ <b>Savoir convoité</b> : <i>On raconte qu'une lanterne bien nourrie de parchemins finit par répondre aux questions des voyageurs.</i><br/>↳ <code>IA &amp; RAG</code>
+- 🪲 <b>Terrain de chasse</b> : <i>Les insectes nichent entre les balises et sous les feuilles de style. Aucun ne m'échappe longtemps.</i><br/>↳ <code>HTML / CSS</code>
 
 <br clear="right"/>
 

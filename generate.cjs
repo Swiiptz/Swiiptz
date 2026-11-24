@@ -14,13 +14,12 @@ const path = require('path');
 const CONFIG = {
   username: 'Swiiptz',               // ton pseudo GitHub (utilisé pour les stats)
   name: 'SWIIPTZ',                   // titre de la bannière
-  tagline: 'Développeur · explorateur des profondeurs',
+  tagline: 'Développeur · cartographe des royaumes oubliés',
   greeting: '~ Bienvenue, voyageur ~',
   about: [
-    ['🗺️', 'Je cartographie des projets en ce moment : <b>…</b>'],
-    ['🕯️', "J'apprends : <b>…</b>"],
-    ['🪲', 'Je chasse les bugs dans : <b>…</b>'],
-    ['💬', 'Me trouver : <b>…</b>'],
+    ['🗺️', "<b>Quête en cours</b> : <i>Au fond des archives, d'anciens grimoires attendent qu'on les traduise. Je fabrique des automates qui tournent les pages à ma place.</i><br/>↳ <code>Automatisation de traduction</code>"],
+    ['🕯️', "<b>Savoir convoité</b> : <i>On raconte qu'une lanterne bien nourrie de parchemins finit par répondre aux questions des voyageurs.</i><br/>↳ <code>IA &amp; RAG</code>"],
+    ['🪲', "<b>Terrain de chasse</b> : <i>Les insectes nichent entre les balises et sous les feuilles de style. Aucun ne m'échappe longtemps.</i><br/>↳ <code>HTML / CSS</code>"],
   ],
   skills: 'js,ts,nodejs,html,css,git,github,vscode',   // ids skillicons.dev
   footer: 'Repose-toi un instant, voyageur. Le chemin continue.',
@@ -507,7 +506,7 @@ ${spires(11, H, 50, 150, '#080d1c', false)}
 <ellipse class="fog2" cx="900" cy="345" rx="460" ry="40" fill="#9fc3ea" opacity=".06" filter="url(#fog)"/>
 <path d="${st}" fill="#02030a"/>
 <g>${motes}</g>
-<g class="title" text-anchor="middle" font-family="Cinzel, 'Trajan Pro', 'Cormorant Garamond', Garamond, Georgia, serif">
+<g class="title" transform="translate(-70,0)" text-anchor="middle" font-family="Cinzel, 'Trajan Pro', 'Cormorant Garamond', Garamond, Georgia, serif">
   <text x="640" y="118" font-size="22" letter-spacing="6" fill="#8fa3c7" font-style="italic">${esc(CONFIG.greeting)}</text>
   <text x="640" y="212" font-size="88" letter-spacing="12" fill="#eef4ff" filter="url(#glow)">${esc(CONFIG.name)}</text>
   <g stroke="#7f93ba" stroke-width="1.5" fill="none" opacity=".8">
